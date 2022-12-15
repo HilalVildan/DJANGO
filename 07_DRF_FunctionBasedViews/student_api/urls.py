@@ -1,9 +1,25 @@
 from django.urls import path
-from .views import home,student_api, student_api_get_update_delete, path_api
 
+from .views import (
+    home,
+    student_list,
+    student_create,
+    student_detail,
+    student_update,
+    student_delete,
+    student_list_create,
+    student_detail_update_delete,
+)
+
+# after /api/:
 urlpatterns = [
     path('', home),
-    path('student/', student_api),
-    path('student/<int:pk>/', student_api_get_update_delete, name = "detail"),
-    path('path/', path_api),
+    path('student_list/', student_list),
+    path('student_create/', student_create),
+    path('student_detail/<int:pk>', student_detail),
+    path('student_update/<int:pk>', student_update),
+    path('student_delete/<int:pk>', student_delete),
+    # concat_functions()
+    path('student_list_create/', student_list_create),
+    path('student_detail_update_delete/<int:pk>', student_detail_update_delete),
 ]
