@@ -336,7 +336,7 @@ class Student(models.Model):
 
 - makemigrations
 - migrate
-- creattesuperuser
+- createsuperuser
 
 go to student_api.serializers.py and make below amendments
 
