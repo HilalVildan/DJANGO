@@ -48,6 +48,8 @@
 
 ## .dockerignore
 
+create .dockerignore file for per project:
+
 ```dockerignore
 
 *.pyc
@@ -91,33 +93,42 @@ backend/dockerfile:
 
 ```dockerfile
 
-# Python:
-# last version:
+# --- Build Start ----
+
+# Python
+# Last Version
 # FROM python
-# light version
-FROM python:3.10.8-slim-bullseye
+# Light Versiyon
+FROM python:3.11.1-slim-bullseye
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set main folder in docker:
+# Set main folder in container:
+# WORKDIR /
 WORKDIR /backend
 
-# Copy file from local to docker:
-COPY requirements.txt /backend/requirements.txt
+# copy all from local-files (.) to docker (/backend):
+COPY . /backend
 
 # Run shell-command in docker before build:
 RUN pip install -r requirements.txt --no-cache-dir
 
-# copy all from local-files (.) to docker (/backend):
-COPY . /backend
+# --- Build End ----
+
+# --- Run Start ---
 
 # Run shell-script:
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 # App Port (optional)
 EXPOSE 8000
 
+# --- Run Start ---
+
 # $ cd /backend
+# Create Image:
 # $ docker build -t backend .
+# Create and Start Container:
+# -d -> Daemon Mode
 # $ docker run -d -p 8000:8000 --name backend backend
 # Browser: http://localhost:8000
 
@@ -181,9 +192,11 @@ EXPOSE 3000
 
     # IMAGES:
     $ docker images # List local images.
+    $ docker image ls # List local images.
     $ docker rmi <image_name> # Delete image.
 
     # CONTAINERS:
+    $ docker container ls # List local container.
     $ docker ps # List active containers.
     $ docker ps -a # docker ps --all # List all containers.
     $ docker start|stop <container_name> # Start/Stop container.
@@ -194,10 +207,52 @@ EXPOSE 3000
     $ docker login -u <user_name> # Login manual
     $ docker tag <image_name> <user_name>/<image_name>[:tag] # Connect repo and set tag
     $ docker push <user_name>/<image_name>[:tag] # PUSH
-    $ docker pull <image_name> # PULL
-    $ docker search <image_name> # Search
+    $ docker pull <user_name>/<image_name>[:tag] # PULL
+    $ docker search <image_name> # Search in DockerHub
 
 ```
+---
+
+# Docker Compose
+
+* https://docs.docker.com/compose/compose-file/
+
+/docker-compose.yml:
+
+```yml
+
+# version: "3.9" # optional
+
+services:
+
+  frontend:
+    container_name: frontend
+    image: docker-compose-fronted
+    build: ./frontend
+    ports:
+      - 3000:3000
+      - 80:3000
+    restart: on-failure
+    depends_on:
+      - backend # first run backend.
+
+  backend:
+    # container_name: backend # optional (default:key)
+    image: docker-compose-backend # build, if no image
+    build: ./backend # Which folder (project folder) (must be dockerfile in the folder)
+    ports: # external:internal ports
+      - 8000:8000
+    restart: on-failure # when restart
+    volumes: # external:internal volumes
+      - ./backend/db.sqlite3:/backend/db.sqlite3
+
+# $ docker compose up # compose çalıştır.
+# $ docker compose up -d --build # compose daemon aç ve tekrar build et.
+# $ docker compose down # compose kapat.
+
+```
+
+---
 
 ### Bonus: SuperMario:
 
